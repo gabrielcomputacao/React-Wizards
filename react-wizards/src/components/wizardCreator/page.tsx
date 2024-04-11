@@ -20,18 +20,16 @@ import {
 } from "../ui/table";
 import { Trash2 } from "lucide-react";
 import { Separator } from "../ui/separator";
-
-interface IListComponente {
-  componente: string;
-  text: string;
-}
+import { IListComponente } from "@/utils/types";
+import { useWizardStore } from "@/store/wizardStore";
+import { useCountStore } from "@/store/countStore";
 
 export function SettingsWizardCreator() {
   const [isCreatingWizard, setIsCreatingWizard] = useState(false);
   const [isCreatingPage, setIsCreatingPage] = useState(false);
-  const [listComponents, setListComponents] = useState<Array<IListComponente>>(
-    []
-  );
+
+  const { wizard, addWizard, startPage } = useWizardStore();
+  const { countIndexPages } = useCountStore();
 
   return (
     <div className="flex flex-col justify-center items-center w-full gap-4">
@@ -40,7 +38,12 @@ export function SettingsWizardCreator() {
           <h1 className="text-3xl font-semibold text-center inline-block">
             Crie sua Wizard
           </h1>
-          <Button onClick={() => setIsCreatingWizard(true)}>
+          <Button
+            onClick={() => {
+              setIsCreatingWizard(true);
+              addWizard();
+            }}
+          >
             Criar Wizard Agora!
           </Button>
         </div>
@@ -60,7 +63,10 @@ export function SettingsWizardCreator() {
           </div>
           <Button
             disabled={isCreatingPage}
-            onClick={() => setIsCreatingPage(true)}
+            onClick={() => {
+              setIsCreatingPage(true);
+              startPage();
+            }}
           >
             {!isCreatingPage ? "Criar página" : "Criando Página..."}
           </Button>
@@ -77,7 +83,7 @@ export function SettingsWizardCreator() {
                 <Label className="mb-4">
                   Selecione os componentes da sua página
                 </Label>
-                <Select className="w-full">
+                <Select>
                   <SelectTrigger>
                     <SelectValue placeholder="Componentes" />
                   </SelectTrigger>
@@ -115,17 +121,20 @@ export function SettingsWizardCreator() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {listComponents.map((component, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">
-                          {component.componente}
-                        </TableCell>
-                        <TableCell>{component.text}</TableCell>
-                        <TableCell>
-                          <Trash2 />
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {wizard.pages?.length &&
+                      wizard.pages[countIndexPages].components.map(
+                        (component, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">
+                              {component.componente}
+                            </TableCell>
+                            <TableCell>{component.text}</TableCell>
+                            <TableCell>
+                              <Trash2 />
+                            </TableCell>
+                          </TableRow>
+                        )
+                      )}
                   </TableBody>
                 </Table>
               </div>

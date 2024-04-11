@@ -1,5 +1,6 @@
 "use client";
 
+import { Wizard } from "@/components/wizard/page";
 import { SettingsWizardCreator } from "@/components/wizardCreator/page";
 
 export default function WizardCreator() {
@@ -9,7 +10,9 @@ export default function WizardCreator() {
         <div className="col-span-1 border-r-2 p-4 w-full ">
           <SettingsWizardCreator />
         </div>
-        <div className="col-span-2 "></div>
+        <div className="col-span-2 ">
+          <Wizard />
+        </div>
       </div>
     </div>
   );
