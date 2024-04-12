@@ -3,19 +3,19 @@ import { create } from "zustand";
 interface countStore {
   countIndexPages: number;
   plusCount: () => void;
-  lessCount: () => void;
+  setCountIndex: (index: number) => void;
 }
 
 export const useCountStore = create<countStore>((set) => {
   return {
-    countIndexPages: 0,
+    countIndexPages: -1,
     plusCount: () =>
       set((state) => ({
-        countIndexPages: state.countIndexPages++,
+        countIndexPages: state.countIndexPages + 1,
       })),
-    lessCount: () =>
+    setCountIndex: (index: number) =>
       set((state) => ({
-        countIndexPages: state.countIndexPages--,
+        countIndexPages: index,
       })),
   };
 });
