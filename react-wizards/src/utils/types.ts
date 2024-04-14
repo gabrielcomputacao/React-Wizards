@@ -17,16 +17,18 @@ export interface IWizardPage {
 }
 
 export interface IWizard {
+  id: string;
   orientation: OrientacaoEnum;
   pages: Array<IWizardPage> | undefined;
 }
 
 export interface IListWizard {
+  id: string;
   wizards: Array<IWizard>;
 }
 
 export interface IMessageError {
   messageError: string;
-  type: "orientation" | "text" | "";
+  type: "orientation" | "text" | "title" | "";
   isOpen: boolean;
 }

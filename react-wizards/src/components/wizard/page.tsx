@@ -1,5 +1,5 @@
 import { IComponent, IWizard } from "@/utils/types";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -11,44 +11,31 @@ import {
   PaginationContent,
   PaginationItem,
 } from "../ui/pagination";
+import { renderComponents } from "@/utils/utils";
 
 export function Wizard() {
   const { wizard } = useWizardStore();
   const { countIndexPages, setCountIndex } = useCountStore();
 
-  function renderComponents(valueComponent: IComponent) {
-    if (valueComponent.typeComponent === "button") {
-      return (
-        <div>
-          <Button>{valueComponent.text}</Button>
-        </div>
-      );
-    } else if (valueComponent.typeComponent === "label") {
-      return (
-        <div>
-          <Label> {valueComponent.text} </Label>
-        </div>
-      );
-    } else if (valueComponent.typeComponent === "input") {
-      return (
-        <div>
-          <Input />
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <Textarea />
-        </div>
-      );
+  const orientationSelected = useMemo(() => {
+    if (wizard.orientation === "horizontal") {
+      return true;
     }
-  }
+
+    return false;
+  }, [wizard.orientation]);
 
   return (
     <div className="flex justify-center items-start h-full">
       {wizard.pages && (
-        <div className="bg-slate-300 rounded-md border-2 p-4 w-8/12 mt-8">
-          <div className="bg-slate-100 min-h-[50px] relative">
+        <div
+          className={`bg-slate-300 rounded-md border-2 p-4 w-8/12 mt-8 ${
+            orientationSelected
+              ? ""
+              : "flex flex-row-reverse justify-center gap-3 items-center "
+          } `}
+        >
+          <div className="bg-slate-100 min-h-[50px] w-full relative">
             <span className="absolute right-3">
               Page: {`${countIndexPages + 1}`}
             </span>
@@ -57,16 +44,29 @@ export function Wizard() {
                 <h1 className="font-semibold text-3xl">
                   {wizard.pages[countIndexPages].title}
                 </h1>
-                {wizard.pages[countIndexPages].components.map((component) => {
-                  return renderComponents(component);
-                })}
+                {wizard.pages[countIndexPages].components.map(
+                  (component, index) => {
+                    return (
+                      <div key={index}>
+                        {" "}
+                        {renderComponents(component, index)}{" "}
+                      </div>
+                    );
+                  }
+                )}
               </div>
             )}
           </div>
           <div className="mt-3   flex justify-center">
             <div className="w-3/5 ">
               <Pagination>
-                <PaginationContent>
+                <PaginationContent
+                  className={` ${
+                    orientationSelected
+                      ? ""
+                      : "flex flex-col items-center justify-center gap-1"
+                  } `}
+                >
                   {wizard.pages.map((_, index) => {
                     return (
                       <PaginationItem key={index}>

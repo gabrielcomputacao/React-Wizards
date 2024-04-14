@@ -40,7 +40,11 @@ export const useWizardStore = create<WizardStore>((set) => {
       })),
     addWizard: () =>
       set((state) => ({
-        wizard: { orientation: OrientacaoEnum.VAZIO, pages: undefined },
+        wizard: {
+          orientation: OrientacaoEnum.VAZIO,
+          pages: undefined,
+          id: String(uuidv4()),
+        },
       })),
     startPage: () =>
       set((state) => ({

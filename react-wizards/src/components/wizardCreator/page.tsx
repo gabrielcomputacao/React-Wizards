@@ -21,10 +21,18 @@ import {
 } from "../ui/table";
 import { Trash2 } from "lucide-react";
 import { Separator } from "../ui/separator";
-import { IComponent, IMessageError, OrientacaoEnum } from "@/utils/types";
+import {
+  IComponent,
+  IMessageError,
+  IWizard,
+  OrientacaoEnum,
+} from "@/utils/types";
 import { useWizardStore } from "@/store/wizardStore";
 import { useCountStore } from "@/store/countStore";
 import { handleOnValueChangeOrientation, isNotEmpty } from "@/utils/functions";
+import { useListWizardStore } from "@/store/listWizardStore";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 export function SettingsWizardCreator() {
   const [isCreatingWizard, setIsCreatingWizard] = useState(false);
@@ -45,7 +53,9 @@ export function SettingsWizardCreator() {
     addPageComponent,
     removePageComponent,
   } = useWizardStore();
+
   const { countIndexPages, plusCount } = useCountStore();
+  const { listWizards, addWizardInList } = useListWizardStore();
 
   const isComponentButtonOrInput = () => {
     if (
@@ -85,6 +95,25 @@ export function SettingsWizardCreator() {
     };
 
     return componenteWithId;
+  }
+
+  const handleRedirectHome = () => {
+    window.location.href = "/";
+  };
+
+  function saveListWizardInLocalStorage(wizard: IWizard) {
+    const listWizardsLocalStorage = localStorage.getItem("wizardsList");
+
+    const dataListWizardsLocalStorage = listWizardsLocalStorage
+      ? JSON.parse(listWizardsLocalStorage)
+      : [];
+
+    dataListWizardsLocalStorage.push(wizard);
+
+    localStorage.setItem(
+      "wizardsList",
+      JSON.stringify(dataListWizardsLocalStorage)
+    );
   }
 
   return (
@@ -164,6 +193,11 @@ export function SettingsWizardCreator() {
                   placeholder="Digite o título da página"
                   value={wizard.pages && wizard.pages[countIndexPages].title}
                 />
+                {messageError.isOpen && messageError.type === "title" && (
+                  <span className="font-normal w-full block mt-1 text-center text-xs text-red-600">
+                    {messageError.messageError}
+                  </span>
+                )}
               </div>
               <div className="w-full">
                 <Label className="mb-4">
@@ -296,7 +330,17 @@ export function SettingsWizardCreator() {
               <div className="flex justify-center items-center w-full">
                 <Button
                   onClick={() => {
-                    setIsCreatingPage(false);
+                    if (wizard.pages![countIndexPages].title === "") {
+                      setMessageError({
+                        messageError:
+                          "Escolha o texto para o título da sua página.",
+                        isOpen: true,
+                        type: "title",
+                      });
+                    } else {
+                      setIsCreatingPage(false);
+                      resetMessageError();
+                    }
                   }}
                   className="inline-block bg-green-700 px-8"
                 >
@@ -311,6 +355,13 @@ export function SettingsWizardCreator() {
           <Button
             disabled={isCreatingPage || wizard.pages === undefined}
             className="w-3/4 bg-green-700 px-8"
+            onClick={() => {
+              addWizardInList(wizard);
+              setIsCreatingWizard(false);
+              saveListWizardInLocalStorage(wizard);
+              addWizard();
+              handleRedirectHome();
+            }}
           >
             Criar Wizard
           </Button>
