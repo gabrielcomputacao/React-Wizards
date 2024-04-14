@@ -1,9 +1,4 @@
-import { IComponent, IWizard } from "@/utils/types";
-import { useMemo, useState } from "react";
-import { Button } from "../ui/button";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
+import { useMemo } from "react";
 import { useWizardStore } from "@/store/wizardStore";
 import { useCountStore } from "@/store/countStore";
 import {
@@ -26,7 +21,7 @@ export function Wizard() {
   }, [wizard.orientation]);
 
   return (
-    <div className="flex justify-center items-start h-full">
+    <div className="flex justify-center items-start h-full mb-5">
       {wizard.pages && (
         <div
           className={`bg-slate-300 rounded-md border-2 p-4 w-8/12 mt-8 ${
@@ -41,7 +36,7 @@ export function Wizard() {
             </span>
             {wizard.pages.length !== 0 && (
               <div className="flex flex-col justify-center items-center gap-5 p-5">
-                <h1 className="font-semibold text-3xl">
+                <h1 className="font-semibold text-lg text-center sm:text-3xl">
                   {wizard.pages[countIndexPages].title}
                 </h1>
                 {wizard.pages[countIndexPages].components.map(

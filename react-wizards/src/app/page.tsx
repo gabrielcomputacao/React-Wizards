@@ -1,6 +1,5 @@
 "use client";
 import { Header } from "@/components/header/page";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { useListWizardStore } from "@/store/listWizardStore";
 import { IWizard } from "@/utils/types";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -21,10 +21,6 @@ export default function Home() {
   );
 
   useEffect(() => {
-    if (listWizards.length > 0) {
-      setListWizards(listWizards);
-    }
-
     const getListWizardsLocalStorage = localStorage.getItem("wizardsList");
 
     if (getListWizardsLocalStorage) {
@@ -38,7 +34,7 @@ export default function Home() {
       <div className="w-full h-full">
         <div className="p-5 w-full h-full">
           {getListWizards.length > 0 ? (
-            <div className="flex items-center gap-5 flex-wrap">
+            <div className="flex justify-center items-center gap-5 flex-wrap">
               {getListWizards.map((wizard, index) => (
                 <Card
                   key={`${index}- ${String(uuidv4())}`}
@@ -71,7 +67,12 @@ export default function Home() {
                     </CardContent>
                   ))}
                   <CardFooter className="flex">
-                    <Button>Ver Wizard</Button>
+                    <Link
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 px-2 py-1 rounded-sm"
+                      href={`/wizard/${index}`}
+                    >
+                      Ver Wizard
+                    </Link>
                   </CardFooter>
                 </Card>
               ))}

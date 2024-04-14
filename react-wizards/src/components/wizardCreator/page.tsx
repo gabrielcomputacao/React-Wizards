@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -31,8 +31,6 @@ import { useWizardStore } from "@/store/wizardStore";
 import { useCountStore } from "@/store/countStore";
 import { handleOnValueChangeOrientation, isNotEmpty } from "@/utils/functions";
 import { useListWizardStore } from "@/store/listWizardStore";
-import { useRouter } from "next/router";
-import Link from "next/link";
 
 export function SettingsWizardCreator() {
   const [isCreatingWizard, setIsCreatingWizard] = useState(false);
@@ -55,23 +53,29 @@ export function SettingsWizardCreator() {
   } = useWizardStore();
 
   const { countIndexPages, plusCount } = useCountStore();
-  const { listWizards, addWizardInList } = useListWizardStore();
+  const { addWizardInList } = useListWizardStore();
 
-  const isComponentButtonOrInput = () => {
+  const isComponentButtonOrInput = useMemo(() => {
     if (
       component.typeComponent === "button" ||
-      component.typeComponent === "label"
+      component.typeComponent === "label" || 
+      component.typeComponent === "input"  
     ) {
       return true;
     }
     return false;
-  };
+  }, [component.typeComponent]);
+
+  const componentAvailable = useMemo(() => {
+    return isNotEmpty(component);
+  }, [component]);
 
   function handleOnValueChangeComponent(value: any) {
     setComponent((prev) => {
       return {
         ...prev,
         typeComponent: value,
+        id: String(uuidv4()),
       };
     });
   }
@@ -86,15 +90,6 @@ export function SettingsWizardCreator() {
       messageError: "",
       type: "",
     });
-  }
-
-  function addIdComponent(componente: IComponent) {
-    const componenteWithId: IComponent = {
-      ...componente,
-      id: String(uuidv4()),
-    };
-
-    return componenteWithId;
   }
 
   const handleRedirectHome = () => {
@@ -120,7 +115,7 @@ export function SettingsWizardCreator() {
     <div className="flex flex-col justify-center items-center w-full gap-4">
       {!isCreatingWizard ? (
         <div className="items-center flex flex-col gap-4">
-          <h1 className="text-3xl font-semibold text-center inline-block">
+          <h1 className="text-lg sm:text-3xl font-semibold text-center inline-block">
             Crie sua Wizard
           </h1>
           <Button
@@ -134,9 +129,9 @@ export function SettingsWizardCreator() {
         </div>
       ) : (
         <>
-          <div className="flex flex-col items-center gap-3">
+          <div className="flex flex-col items-center gap-3 ">
             <Label>Escolha a orientação do Wizard</Label>
-            <div>
+            <div className="">
               <Select
                 onValueChange={(value) => {
                   if (value !== "") {
@@ -217,14 +212,14 @@ export function SettingsWizardCreator() {
                   </SelectContent>
                 </Select>
 
-                {isNotEmpty(component) && (
+                {componentAvailable && (
                   <div
                     className={` ${
-                      isComponentButtonOrInput() ? "border-4" : "border-0"
+                      isComponentButtonOrInput ? "border-4" : "border-0"
                     }  rounded-md p-3 mt-4 `}
                   >
                     <div>
-                      {isComponentButtonOrInput() && (
+                      {isComponentButtonOrInput && (
                         <div>
                           <Label className="mb-4" htmlFor="titulo">
                             Digite o texto do componente{" "}
@@ -253,16 +248,13 @@ export function SettingsWizardCreator() {
                       )}
                       <Button
                         className={` ${
-                          isComponentButtonOrInput() ? "mt-4" : "mt-0"
+                          isComponentButtonOrInput ? "mt-4" : "mt-0"
                         } `}
                         onClick={() => {
                           if (isNotEmpty(component)) {
-                            if (isComponentButtonOrInput()) {
+                            if (isComponentButtonOrInput) {
                               if (component.text) {
-                                addPageComponent(
-                                  addIdComponent(component),
-                                  countIndexPages
-                                );
+                                addPageComponent(component, countIndexPages);
                                 setComponent({} as IComponent);
                                 resetMessageError();
                               } else {
@@ -274,10 +266,7 @@ export function SettingsWizardCreator() {
                                 });
                               }
                             } else {
-                              addPageComponent(
-                                addIdComponent(component),
-                                countIndexPages
-                              );
+                              addPageComponent(component, countIndexPages);
                               setComponent({} as IComponent);
                             }
                           }
@@ -293,11 +282,16 @@ export function SettingsWizardCreator() {
                   <TableCaption>Lista de Componentes Adicionados</TableCaption>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="font-medium">Componente</TableHead>
-                      <TableHead className="font-medium">
+                      <TableHead className="font-normal md:font-medium">
+                        Componente
+                      </TableHead>
+                      <TableHead className="font-normal md:font-medium">
                         Texto do Componente
                       </TableHead>
-                      <TableHead className="font-medium"> Deletar</TableHead>
+                      <TableHead className="font-normal md:font-medium">
+                        {" "}
+                        Deletar
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

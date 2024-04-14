@@ -21,7 +21,7 @@ export function renderComponents(valueComponent: IComponent, index: number) {
   } else if (valueComponent.typeComponent === "input") {
     return (
       <div>
-        <Input key={index} />
+        <Input placeholder={valueComponent.text} key={index} />
       </div>
     );
   } else {
