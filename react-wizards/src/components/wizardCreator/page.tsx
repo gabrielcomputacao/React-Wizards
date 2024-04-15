@@ -188,7 +188,9 @@ export function SettingsWizardCreator() {
                   onChange={handleOnChangeTitle}
                   id="titulo"
                   placeholder="Digite o título da página"
-                  value={wizard.pages && wizard.pages[countIndexPages].title}
+                  value={
+                    wizard.pages ? wizard.pages[countIndexPages].title : ""
+                  }
                 />
                 {messageError.isOpen && messageError.type === "title" && (
                   <span className="font-normal w-full block mt-1 text-center text-xs text-red-600">
@@ -323,7 +325,7 @@ export function SettingsWizardCreator() {
                   </TableBody>
                 </Table>
               </div>
-              <div className="flex justify-center items-center w-full">
+              <div className="flex justify-center items-center w-full gap-4 flex-wrap">
                 <Button
                   onClick={() => {
                     if (wizard.pages![countIndexPages].title === "") {
@@ -350,7 +352,7 @@ export function SettingsWizardCreator() {
 
           <Button
             disabled={isCreatingPage || wizard.pages === undefined}
-            className="w-3/4 bg-green-700 px-8"
+            className="w-3/4 bg-green-700 px-8 max-w-[400px]"
             onClick={() => {
               addWizardInList(wizard);
               setIsCreatingWizard(false);

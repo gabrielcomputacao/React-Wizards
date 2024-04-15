@@ -41,6 +41,7 @@ export default function Home() {
         {loader ? (
           <div className="flex justify-center items-center w-screen h-screen">
             <Image
+              unoptimized
               src="/assets/loader.gif"
               alt="loader gif"
               width={100}
