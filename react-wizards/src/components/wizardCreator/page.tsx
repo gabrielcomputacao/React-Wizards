@@ -31,6 +31,7 @@ import { useWizardStore } from "@/store/wizardStore";
 import { useCountStore } from "@/store/countStore";
 import { handleOnValueChangeOrientation, isNotEmpty } from "@/utils/functions";
 import { useListWizardStore } from "@/store/listWizardStore";
+import { useLoaderStore } from "@/store/loaderStore";
 
 export function SettingsWizardCreator() {
   const [isCreatingWizard, setIsCreatingWizard] = useState(false);
@@ -54,12 +55,13 @@ export function SettingsWizardCreator() {
 
   const { countIndexPages, plusCount } = useCountStore();
   const { addWizardInList } = useListWizardStore();
+  const { loaderTrue } = useLoaderStore();
 
   const isComponentButtonOrInput = useMemo(() => {
     if (
       component.typeComponent === "button" ||
-      component.typeComponent === "label" || 
-      component.typeComponent === "input"  
+      component.typeComponent === "label" ||
+      component.typeComponent === "input"
     ) {
       return true;
     }
@@ -141,7 +143,7 @@ export function SettingsWizardCreator() {
                 }}
                 defaultValue=""
               >
-                <SelectTrigger className="w-[240px]">
+                <SelectTrigger id="select-orientation" className="w-[240px]">
                   <SelectValue placeholder="Selecione sua Orientação" />
                 </SelectTrigger>
                 <SelectContent>
@@ -201,7 +203,7 @@ export function SettingsWizardCreator() {
                 <Select
                   onValueChange={(value) => handleOnValueChangeComponent(value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="component-trigger">
                     <SelectValue placeholder="Escolha seu Componente" />
                   </SelectTrigger>
                   <SelectContent>
@@ -352,6 +354,7 @@ export function SettingsWizardCreator() {
             onClick={() => {
               addWizardInList(wizard);
               setIsCreatingWizard(false);
+              loaderTrue();
               saveListWizardInLocalStorage(wizard);
               addWizard();
               handleRedirectHome();
